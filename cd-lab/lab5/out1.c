@@ -1,0 +1,1 @@
+intsum(inta,intb){ints=a+b;returns;}boolsearch(int*arr,intkey){inti;for(i=0;i<10;i++){if(arr[i]==key)returntrue;elsereturnfalse;}}voidmain(){inta[20],i,sum;boolstatus;WRITE("Enterarrayelements:");for(i=0;i<10;++i)READ("%d",&a[i]);sum=a[0]+a[4];status=search(a,sum);WRITE("%d",status);}
