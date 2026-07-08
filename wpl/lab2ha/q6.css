@@ -1,0 +1,18 @@
+.container {
+	position: relative;
+        width: 400px;
+        }
+
+img {
+	width: 100%;
+        height: auto;
+        }
+
+marquee {
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        color: white;
+        font-size: 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        }
