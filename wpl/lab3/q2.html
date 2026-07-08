@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="container my-4">
+    <h2 class="text-center mb-4">Employee Management</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">Add/Update Employee</div>
+        <div class="card-body">
+            <form id="employeeForm">
+                <input type="hidden" id="editIndex">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Employee Name</label>
+                        <input type="text" id="name" class="form-control" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Email</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>Department</label>
+                        <input type="text" id="dept" class="form-control" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Position</label>
+                        <input type="text" id="pos" class="form-control" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Employee ID</label>
+                        <input type="text" id="empId" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success" id="saveBtn">Save Employee</button>
+                <button type="reset" class="btn btn-secondary" onclick="resetForm()">Clear</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-dark text-white">Employee List</div>
+        <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover text-center">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Emp ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Position</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+<script>
+    let employees = [];
+    const form = document.getElementById('employeeForm');
+    const tableBody = document.getElementById('employeeTableBody');
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const empData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            dept: document.getElementById('dept').value,
+            pos: document.getElementById('pos').value,
+            empId: document.getElementById('empId').value
+        };
+
+        const editIndex = document.getElementById('editIndex').value;
+        if (editIndex === "") {
+            employees.push(empData);
+        } else {
+            employees[editIndex] = empData;
+            document.getElementById('editIndex').value = "";
+            document.getElementById('saveBtn').innerText = "Save Employee";
+        }
+        
+        form.reset();
+        renderTable();
+    });
+
+    function renderTable() {
+        tableBody.innerHTML = "";
+        employees.forEach((emp, index) => {
+            tableBody.innerHTML += `
+                <tr>
+                    <td>${emp.empId}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.email}</td>
+                    <td>${emp.dept}</td>
+                    <td>${emp.pos}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="editEmployee(${index})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${index})">Delete</button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    function deleteEmployee(index) {
+        employees.splice(index, 1);
+        renderTable();
+    }
+
+    function editEmployee(index) {
+        const emp = employees[index];
+        document.getElementById('name').value = emp.name;
+        document.getElementById('email').value = emp.email;
+        document.getElementById('dept').value = emp.dept;
+        document.getElementById('pos').value = emp.pos;
+        document.getElementById('empId').value = emp.empId;
+        document.getElementById('editIndex').value = index;
+        document.getElementById('saveBtn').innerText = "Update Employee";
+    }
+
+    function resetForm() {
+        document.getElementById('editIndex').value = "";
+        document.getElementById('saveBtn').innerText = "Save Employee";
+    }
+</script>
+
+</body>
+</html>
