@@ -1,0 +1,36 @@
+    body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            padding: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 60%;
+            margin: auto;
+            background-color: white;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: red;
+            color: white;
+        }
+
+        .country {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
+        .year {
+            background-color: blue;
+        }
+
+        .population {
+            background-color: greenyellow;
+        }
