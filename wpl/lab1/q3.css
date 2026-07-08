@@ -1,0 +1,27 @@
+body {
+      font-family: Arial;
+      background-color: whitesmoke;
+    }
+    .container {
+      width: 70%;
+      margin: auto;
+      background-color: crimson;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    h2{
+        text-align: center;
+    }
+img{
+        width: 100%;
+      margin-bottom: 20px;
+    }
+
+    video {
+      width: 100%;
+      margin-bottom: 20px;
+    }
