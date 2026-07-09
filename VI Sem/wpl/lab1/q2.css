@@ -1,0 +1,15 @@
+body {
+      font-family: Arial;
+      background-color: navy;
+    }
+
+    .container {
+      background-color: cornflowerblue;
+      width: 60%;
+      margin: 20px auto;
+      padding: 15px;
+    }
+
+    h1 {
+      text-align: center;
+    }

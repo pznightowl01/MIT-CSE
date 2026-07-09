@@ -1,0 +1,37 @@
+Here's your code with detailed comments and time complexities:
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+void main() {
+    char s1[50], s2[50];
+    int i, j, ind, flag = 0;
+    
+    // Input strings from the user
+    printf("Enter string 1 ");
+    scanf("%s", s1);
+    printf("Enter string 2 ");
+    scanf("%s", s2);
+    
+    // Loop through s1 to find substring s2
+    for (i = 0; i < strlen(s1) - strlen(s2) + 1; i++) { // O(n * m), where n is the length of s1 and m is the length of s2
+        for (ind = 0; ind < strlen(s2); ind++) { // O(m), where m is the length of s2
+            if (s2[ind] != s1[i + ind])
+                break;
+        }
+        if (ind == strlen(s2)) // If the loop completed without a break, substring found
+            break;
+    }
+    
+    // Output the result
+    if (ind == strlen(s2)) // If the loop completed without a break, substring found
+        printf("Substring is at index %d. Count : %d", i, i + ind); // O(1)
+    else
+        printf("String 1 does not have substring 2. Count : %d", i); // O(1)
+}
+```
+
+Time complexity analysis:
+- The nested loops iterate through each character of `s1` to compare with `s2`. The outer loop iterates `n - m + 1` times (where `n` is the length of `s1` and `m` is the length of `s2`). Inside the outer loop, the inner loop iterates `m` times. So, the overall time complexity is O(n * m), where `n` is the length of `s1` and `m` is the length of `s2`.
+- The other operations such as input/output and simple comparisons have constant time complexity, denoted as O(1).

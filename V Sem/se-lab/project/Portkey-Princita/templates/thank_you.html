@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmed - Portkey{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-12">
+        <!-- Success Icon -->
+        <div class="text-center mb-8">
+            <div class="text-8xl mb-6">✅</div>
+            <h1 class="text-4xl font-bold text-green-600 mb-4">Order Placed Successfully!</h1>
+            <p class="text-xl text-gray-700">
+                Thank you for your order. Your delicious food is on its way!
+            </p>
+        </div>
+
+        {% if order %}
+        <!-- Order Details -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <p class="text-sm text-gray-600">Order ID</p>
+                    <p class="font-bold text-lg">#{{ order.id }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Order Date</p>
+                    <p class="font-bold">{{ order.created_at.strftime('%B %d, %Y at %I:%M %p') if order.created_at else 'N/A' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Status</p>
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                        {{ order.status.title() }}
+                    </span>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Total Amount</p>
+                    <p class="font-bold text-lg text-orange-600">₹ {{ "%.2f"|format(order.total_amount) }}</p>
+                </div>
+            </div>
+
+            {% if order.order_items %}
+            <div class="mt-6">
+                <h3 class="font-bold text-gray-800 mb-3">Items Ordered:</h3>
+                <div class="space-y-2">
+                    {% for item in order.order_items %}
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                        <div>
+                            <span class="font-semibold">{{ item.menu_item.name if item.menu_item else 'Unknown Item' }}</span>
+                            <span class="text-gray-600">× {{ item.quantity }}</span>
+                        </div>
+                        <span class="font-bold">₹ {{ "%.2f"|format(item.subtotal) }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- What's Next -->
+        <div class="bg-blue-50 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">What's Next?</h2>
+            <div class="text-left space-y-3 text-gray-700">
+                <p>✓ Your order has been confirmed</p>
+                <p>✓ Payment received successfully</p>
+                <p>✓ Restaurant is preparing your food</p>
+                <p>✓ Delivery partner will be assigned shortly</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <a href="/" class="bg-orange-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-orange-700 transition text-lg">
+                Order More Food
+            </a>
+            <a href="/chatbot-page" class="bg-gray-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-gray-700 transition text-lg">
+                🤖 Chat with Us
+            </a>
+            {% if order %}
+            <a href="/profile" class="bg-green-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-green-700 transition text-lg">
+                View Order History
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Footer Note -->
+        <p class="text-gray-500 text-sm text-center">
+            We'll notify you once your order is on its way. Enjoy your meal! 🍕
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+package com.portkey.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "menu_items")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class MenuItem {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String description;
+    private Double price;
+    private Boolean available = true;
+    private String category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
+}

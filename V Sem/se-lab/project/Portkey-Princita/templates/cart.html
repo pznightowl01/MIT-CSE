@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - Portkey{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <h1 class="text-4xl font-bold text-gray-800 mb-2 flex items-center space-x-2">
+        <span>🛒</span>
+        <span>Your Magical Cart</span>
+    </h1>
+    <p class="text-gray-600 mb-8 italic text-lg">"Food that teleports to you" ✨</p>
+
+    {% if cart_items %}
+    <div class="bg-white rounded-xl shadow-2xl p-8 mb-8 border-4 border-amber-200">
+        <!-- Cart Items -->
+        <div class="space-y-6 mb-8">
+            {% for item in cart_items %}
+            <div class="flex items-start justify-between border-b-2 border-amber-100 pb-6 hover:bg-amber-50 p-4 rounded-lg transition">
+                <div class="flex-1 pr-4">
+                    <h3 class="text-xl font-bold text-gray-800">{{ item.menu_item.name }}</h3>
+                    <p class="text-gray-600 text-sm mt-1">{{ item.menu_item.description }}</p>
+                    <p class="text-orange-600 font-semibold mt-2">₹{{ "%.2f"|format(item.unit_price_inr) }} each</p>
+                </div>
+                <div class="flex flex-col items-end space-y-3">
+                    <!-- Subtotal and Remove -->
+                    <div class="flex items-center space-x-4">
+                        <span class="text-2xl font-bold text-amber-900">₹{{ "%.2f"|format(item.subtotal_inr) }}</span>
+                        <form method="POST" action="/cart/add" class="inline">
+                            <input type="hidden" name="menu_item_id" value="{{ item.menu_item_id }}">
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-semibold shadow-lg hover:shadow-xl">
+                                🗑️ Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="border-t-4 border-amber-300 pt-6 bg-gradient-to-r from-amber-50 to-orange-50 p-6 rounded-lg">
+            <div class="space-y-3 mb-6">
+                <div class="flex justify-between text-xl">
+                    <span class="text-gray-700 font-semibold">Subtotal:</span>
+                    <span class="font-bold text-amber-900">₹{{ "%.2f"|format(subtotal) }}</span>
+                </div>
+                {% if tax > 0 %}
+                <div class="flex justify-between text-xl">
+                    <span class="text-gray-700 font-semibold">Tax:</span>
+                    <span class="font-bold text-amber-900">₹{{ "%.2f"|format(tax) }}</span>
+                </div>
+                {% endif %}
+                <div class="flex justify-between text-3xl font-bold border-t-2 border-amber-400 pt-4">
+                    <span class="text-gray-800">Total:</span>
+                    <span class="text-orange-600">₹{{ "%.2f"|format(total) }}</span>
+                </div>
+            </div>
+
+            <!-- Payment Options (Simplified - No Razorpay API Required) -->
+            <div class="bg-white rounded-lg p-6 mb-4 shadow-xl border-2 border-amber-300">
+                <h3 class="font-bold text-gray-800 mb-4 text-xl flex items-center space-x-2">
+                    <span>💳</span>
+                    <span>Choose Payment Method:</span>
+                    <span>✨</span>
+                </h3>
+                <p class="text-sm text-gray-600 mb-4 italic">
+                    (Simplified payment for student project - No real payment gateway required)
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- PhonePe -->
+                    <form method="POST" action="/process-payment">
+                        <input type="hidden" name="payment_method" value="PhonePe">
+                        <button 
+                            type="submit"
+                            class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl p-4 font-bold transition shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center justify-center space-x-3"
+                        >
+                            <span class="text-3xl">☎️</span>
+                            <div class="text-left">
+                                <div class="text-lg">PhonePe</div>
+                                <div class="text-xs opacity-80">UPI Payment</div>
+                            </div>
+                        </button>
+                    </form>
+
+                    <!-- Google Pay -->
+                    <form method="POST" action="/process-payment">
+                        <input type="hidden" name="payment_method" value="Google Pay">
+                        <button 
+                            type="submit"
+                            class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl p-4 font-bold transition shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center justify-center space-x-3"
+                        >
+                            <span class="text-3xl">📱</span>
+                            <div class="text-left">
+                                <div class="text-lg">Google Pay</div>
+                                <div class="text-xs opacity-80">UPI Payment</div>
+                            </div>
+                        </button>
+                    </form>
+
+                    <!-- Net Banking -->
+                    <form method="POST" action="/process-payment">
+                        <input type="hidden" name="payment_method" value="Net Banking">
+                        <button 
+                            type="submit"
+                            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl p-4 font-bold transition shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center justify-center space-x-3"
+                        >
+                            <span class="text-3xl">🏦</span>
+                            <div class="text-left">
+                                <div class="text-lg">Net Banking</div>
+                                <div class="text-xs opacity-80">All Banks</div>
+                            </div>
+                        </button>
+                    </form>
+
+                    <!-- Cards/UPI -->
+                    <form method="POST" action="/process-payment">
+                        <input type="hidden" name="payment_method" value="Debit/Credit Card">
+                        <button 
+                            type="submit"
+                            class="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-xl p-4 font-bold transition shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center justify-center space-x-3"
+                        >
+                            <span class="text-3xl">💳</span>
+                            <div class="text-left">
+                                <div class="text-lg">Card Payment</div>
+                                <div class="text-xs opacity-80">Visa/Master/RuPay</div>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <p class="text-center text-amber-700 text-sm mt-4 italic">
+                ✨ Magical payment processing - Your food will teleport to you! ✨
+            </p>
+        </div>
+    </div>
+
+    <!-- Continue Shopping -->
+    <div class="text-center">
+        <a href="/" class="inline-block bg-gradient-to-r from-amber-800 to-amber-900 text-white px-8 py-4 rounded-lg font-bold hover:from-amber-900 hover:to-orange-900 transition shadow-lg text-lg">
+            ← Continue Shopping
+        </a>
+    </div>
+
+    {% else %}
+    <!-- Empty Cart -->
+    <div class="bg-white rounded-xl shadow-2xl p-12 text-center border-4 border-amber-200">
+        <div class="text-8xl mb-6">🛒</div>
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Your cart is empty!</h2>
+        <p class="text-gray-600 mb-8 text-lg">Start adding some delicious food to your magical cart ✨</p>
+        <a href="/" class="inline-block bg-gradient-to-r from-orange-600 to-orange-700 text-white px-10 py-5 rounded-lg font-bold hover:from-orange-700 hover:to-orange-800 transition shadow-xl text-xl">
+            🏆 Browse Restaurants
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

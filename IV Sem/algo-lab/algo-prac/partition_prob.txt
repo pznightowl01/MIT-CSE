@@ -1,0 +1,91 @@
+Here's a detailed explanation of the provided code along with the time complexities:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to find if element x is present in array arr of size n
+// Time complexity: O(n)
+int find(int arr[], int n, int x) {
+    int i;
+    for (i = 0; i < n; i++)
+        if (arr[i] == x)
+            return 1;
+    return 0;
+}
+
+// Function to generate combinations of r elements from array arr such that their sum equals halfSum
+// using the backtracking approach
+// Time complexity: O(nCr * r)
+void getNCR(int arr[], int data[], int start, int end, int ind, int r, int halfSum, int * completed) {
+    int i;
+    if (*completed == 1)
+        return;
+
+    if (ind == r) {
+        int sum = 0;
+        for (i = 0; i < r; i++)
+            sum += data[i];
+        if (sum == halfSum) {
+            // Printing sets with sum equal to halfSum
+            printf("Set 1: ");
+            for (i = 0; i < r; i++)
+                printf("%d ", data[i]);
+            printf("\nSet 2: ");
+            for (i = 0; i <= end; i++) {
+                if (!find(data, r, arr[i])) 
+                    printf("%d ", arr[i]);
+            }
+            printf("\n");
+            *completed = 1; // Indicating that the solution is found
+        }
+    }
+    else {
+        // Generate combinations recursively
+        for (i = start; i <= end && end - i + 1 >= r - ind; i++) {
+            data[ind] = arr[i];
+            getNCR(arr, data, i+1, end, ind+1, r, halfSum, completed);
+        }
+    }
+}
+
+// Main function
+void main() {
+    int n, i, sum = 0;
+    printf("Enter length of array ");
+    scanf("%d", &n);
+    int r = n / 2;
+    int * arr = (int *) malloc(n * sizeof(int)); // Dynamic memory allocation for array arr
+    int * data = (int *) malloc(r * sizeof(int)); // Dynamic memory allocation for temporary array data
+    for (i = 0; i < n; i++) {
+        printf("Enter arr[%d] ", i);
+        scanf("%d", &arr[i]);
+        sum += arr[i];
+    }
+    if (sum % 2 != 0)
+        printf("Not possible.\n"); // If sum is odd, it's not possible to split into two equal halves
+    else {
+        int completed = 0; // Flag to indicate if a solution is found
+        for (i = 1; i <= r; i++) {
+            getNCR(arr, data, 0, n - 1, 0, i, sum/2, &completed); // Generating combinations of length i
+        }
+        if (!completed)
+            printf("Not possible.\n"); // If no solution is found
+    }
+}
+```
+
+Explanation:
+- The code takes an array of integers as input and tries to split it into two sets such that their sums are equal.
+- It uses a backtracking approach to generate combinations of elements.
+- The `find` function is used to check if an element exists in an array.
+- The `getNCR` function generates combinations recursively and checks if the sum of elements in the combination equals half of the total sum.
+- The `main` function takes input, calculates the sum, and then iterates over possible sizes of the first set (from 1 to n/2).
+- If a solution is found, it's printed; otherwise, "Not possible" is printed.
+
+Time complexities:
+- `find` function: O(n), where n is the size of the array.
+- `getNCR` function: O(nCr * r), where n is the size of the array, r is the size of the combination, and nCr is the number of combinations.
+- `main` function: The dominant part is calling `getNCR` for different combination sizes, so the overall complexity depends on that.
+
+Overall, the time complexity is dominated by the `getNCR` function, which depends on the number of combinations. It can be exponential in the worst case.

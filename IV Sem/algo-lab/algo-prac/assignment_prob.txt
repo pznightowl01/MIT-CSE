@@ -1,0 +1,93 @@
+Here's the detailed code with comments explaining each section, along with the time complexities of relevant operations:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to swap two integers
+void swap(int *a, int *b){
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Function to calculate permutations of job assignments
+void permute(int arr[], int n, double * mat[], int l, int r, double *cost, int res[], int * opCount) {
+    int i;
+    // Base case: if we have a complete permutation
+    if (l == r) {
+        double tempCost = 0;
+        // Calculate the cost of the current permutation
+        for (i = 0; i < n ; i++) 
+            tempCost += mat[i][arr[i]];
+        // Increment operation count for comparisons and assignments
+        *opCount = *opCount + n + 1;
+        // If the cost is lower than the current minimum, update cost and result
+        if (*cost > tempCost) {
+            *cost = tempCost;
+            for(i=0;i<n;i++) 
+                res[i] = arr[i];
+            *opCount = *opCount + n;
+        }
+    }
+    else {
+        // Recursive case: generate permutations recursively
+        for (i = l; i <= r ; i++) {
+            // Swap current element with the first element
+            swap(&arr[l],&arr[i]);
+            // Recur for the rest of the elements
+            permute(arr,n,mat,l+1,r,cost,res,opCount);
+            // Backtrack: restore the array to its original state
+            swap(&arr[l],&arr[i]);
+        }
+    }
+}
+
+// Main function
+void main() {
+    int n,jobs,i,j,opCount = 0;
+    // Input the number of employees and jobs
+    printf("Enter the number of employees and jobs ");
+    scanf("%d",&n);
+    // Allocate memory for the efficiency matrix and arrays
+    double ** mat = (double **) calloc (n,sizeof(double *));
+    int * arrForPerm = (int *) calloc(n,sizeof(int));
+    int * res = (int *) calloc(n,sizeof(int));
+    // Input efficiencies for each employee for each job
+    for (i = 0; i < n ; i++) {
+        mat[i] = (double *) calloc (n,sizeof(double));
+        arrForPerm[i] = i;
+    }
+    for (i = 0; i < n ; i++) {
+        for ( j = 0 ; j < n ; j++) {
+            printf("Enter efficiency of employee %d for job %d (float value) ",(i+1),(j+1));
+            scanf("%lf",&mat[i][j]);
+        }
+    }
+    // Display the efficiency matrix
+    printf("\nThe matrix is:\n");
+    for (i = 0; i < n ; i++) {
+        for ( j = 0 ; j < n ; j++)
+            printf("%lf ",mat[i][j]);
+        printf("\n");
+    }
+    // Initialize cost to a large value
+    double cost = 10000.0;
+    // Calculate permutations and find the minimum cost
+    permute(arrForPerm,n,mat,0,n-1,&cost,res,&opCount);
+    // Output the minimum cost and job assignments
+    printf("\nCost : %lf\n",cost);
+    for(i=0;i<n;i++)
+        printf("Employee %d is given job %d\n",i+1,res[i]+1);
+    // Output the total number of operations performed
+    printf("It took %d operations.\n",opCount);
+}
+```
+
+Comments explaining the time complexities:
+
+- **swap()**: This function swaps two integers and has constant time complexity, O(1).
+- **permute()**: This function recursively generates all permutations of job assignments. The time complexity of this function is O(n!), where n is the number of employees, as it generates all possible permutations.
+- **main()**: The main function initializes arrays and matrices, inputs data, calls the permute function, and outputs results. The time complexity of this function depends on the time complexity of the permute function, which is O(n!). Other operations in main have linear time complexity, so overall, the time complexity of main is dominated by the permute function, O(n!).
+
+Overall, the program has a time complexity of O(n!), where n is the number of employees, due to the permutation generation algorithm.
