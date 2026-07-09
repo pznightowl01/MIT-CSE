@@ -1,21 +1,7 @@
 from django.db import models
 
-# Create your models here.
-
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-    visits = models.IntegerField(default=0)
-    likes = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.name
-
-
-class Page(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
-    url = models.URLField()
-    views = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.title
+class Student(models.Model):
+    student_id = models.CharField(max_length=20)
+    student_name = models.CharField(max_length=100)
+    course_name = models.CharField(max_length=100)
+    date_of_birth = models.DateField()
