@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Company</title>
+    <style>
+        Body {
+            Font-family: Arial, sans-serif;
+            Background-color: #f7f7f7;
+            Display: flex;
+            Justify-content: center;
+            Margin-top: 60px;
+        }
+
+        .container {
+            Background: white;
+            Padding: 25px 35px;
+            Border-radius: 8px;
+            Box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            Width: 450px;
+        }
+
+        H2 {
+            Text-align: center;
+            Font-weight: normal;
+        }
+
+        Form p {
+            Margin-bottom: 12px;
+        }
+
+        Input {
+            Width: 100%;
+            Padding: 8px;
+            Margin-top: 4px;
+            Border: 1px solid #ddd;
+            Border-radius: 4px;
+        }
+
+        Button {
+            Width: 100%;
+            Padding: 10px;
+            Background-color: #333;
+            Color: white;
+            Border: none;
+            Border-radius: 4px;
+            Cursor: pointer;
+            Margin-top: 10px;
+        }
+
+        Button:hover {
+            Background-color: #555;
+        }
+
+        Table {
+            Width: 100%;
+            Border-collapse: collapse;
+            Margin-top: 20px;
+        }
+
+        Th, td {
+            Padding: 10px;
+            Text-align: center;
+            Border-bottom: 1px solid #eee;
+        }
+
+        Th {
+            Background-color: #fafafa;
+        }
+
+        .nav {
+            Text-align: center;
+            Margin-bottom: 15px;
+        }
+
+        .nav a {
+            Text-decoration: none;
+            Color: #333;
+            Margin: 0 10px;
+            Font-size: 14px;
+        }
+
+        .no-results {
+            Text-align: center;
+            Margin-top: 15px;
+            Color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class=”container”>
+    <div class=”nav”>
+        <a href=”/insert/”>Insert</a> |
+        <a href=”/search/”>Search</a>
+    </div>
+
+    <h2>Search by Company</h2>
+
+    <form method=”post”>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type=”submit”>Search</button>
+    </form>
+
+    {% if results %}
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>City</th>
+        </tr>
+        {% for r in results %}
+        <tr>
+            <td>{{ r.0 }}</td>
+            <td>{{ r.1 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% elif request.method == ‘POST’ %}
+    <p class=”no-results”>No results found</p>
+    {% endif %}
+</div>
+
+</body>
+</html>
