@@ -1,234 +1,182 @@
+// Name : Princita Zina Miranda 
+// Section : SCE-C 
+// Reg No. : 220905115 (Roll No. 17)
+
+//1. Using getNextToken( ) implemented in Lab No 3, design a Lexical Analyser to implement the following symbol tables.
+//a. local symbol table
+//b. global symbol table
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-#define TABLE_SIZE 10
+#define TABSZ 50
 
-typedef struct Symbol {
-    char lexeme[30];
-    char datatype[20];
-    int ptr;
-    struct Symbol *next;
-} Symbol;
-
-Symbol *ST[TABLE_SIZE] = {NULL};
-char lastType[20] = "";
-int slno = 1;
-
-int hash(char *str) {
-    int sum = 0;
-    for (int i = 0; str[i]; i++)
-        sum += str[i];
-    return sum % TABLE_SIZE;
-}
-
-int searchST(char *lexeme) {
-    int index = hash(lexeme);
-    Symbol *temp = ST[index];
-    while (temp) {
-        if (strcmp(temp->lexeme, lexeme) == 0)
-            return 1;
-        temp = temp->next;
-    }
-    return 0;
-}
-
-void insertST(char *lexeme, char *datatype) {
-    if (searchST(lexeme)) return;
-    if (strcmp(lexeme, "main") == 0) return;
-
-    int index = hash(lexeme);
-    Symbol *node = (Symbol *)malloc(sizeof(Symbol));
-
-    strcpy(node->lexeme, lexeme);
-    strcpy(node->datatype, datatype);
-    node->ptr = index;
-    node->next = ST[index];
-    ST[index] = node;
-}
-
-int row = 1, col = 0;
-int lastPrintedRow = 1;
-
-char *keywords[] = {"int","float","char","double","void", "if","else","for","while","return"
+struct token {
+    char tk_name[20];
+    unsigned int row, col;
+    char type[20];
 };
-int kwCount = 10;
 
-int isKeyword(char *str) {
-    for (int i = 0; i < kwCount; i++)
-        if (strcmp(str, keywords[i]) == 0)
-            return 1;
+struct sym_ent {
+    char lexe[20];
+    char sym_type[10];
+    char dt_type[10];
+    int size;
+    int h_val;
+    char scope[20];
+    struct sym_ent *next;
+};
+
+struct sym_ent *ST[TABSZ];
+int line_no = 1, col_no = 0;
+
+char *kw[] = {"int","float","char","void","if","else","while","for","return","bool"};
+int kw_count = 10;
+
+int isKeyword(char *s) {
+    for(int i=0;i<kw_count;i++)
+        if(strcmp(s, kw[i]) == 0) return 1;
     return 0;
 }
 
-int isDataType(char *str) {
-    return (!strcmp(str,"int") || !strcmp(str,"float") ||
-            !strcmp(str,"char") || !strcmp(str,"double") ||
-            !strcmp(str,"void"));
+int dt_size(char *t) {
+    if(strcmp(t,"int")==0) return 4;
+    if(strcmp(t,"float")==0) return 4;
+    if(strcmp(t,"char")==0) return 1;
+    if(strcmp(t,"bool")==0) return 1;
+    return 0;
 }
 
-void printToken(char *token, int r, int c) {
-    if (r != lastPrintedRow) {
-        printf("\n");
-        lastPrintedRow = r;
-    }
-    printf("<%s,%d,%d> ", token, r, c);
+int hash(char *s) {
+    int h=0;
+    for(int i=0;s[i];i++)
+        h = (h*31 + s[i]) % TABSZ;
+    return h;
 }
 
-void lexicalAnalyze(FILE *fp) {
-    char ch, buf[100];
-    int i;
+int searchST(char *lex) {
+    int h = hash(lex);
+    struct sym_ent *p = ST[h];
+    while(p) {
+        if(strcmp(p->lexe, lex) == 0)
+            return p->h_val;
+        p = p->next;
+    }
+    return -1;
+}
 
-    while ((ch = fgetc(fp)) != EOF) {
+void insertST(char *lex, char *stype, char *dtype, char *scope) {
+    if(searchST(lex) != -1) return;
 
-        if (ch == '\n') {
-            row++; col = 0;
-            strcpy(lastType, "");
-            continue;
+    int h = hash(lex);
+    struct sym_ent *e = malloc(sizeof(struct sym_ent));
+
+    strcpy(e->lexe, lex);
+    strcpy(e->sym_type, stype);
+    strcpy(e->dt_type, dtype);
+    strcpy(e->scope, scope);
+
+    e->size = dt_size(dtype);
+    e->h_val = h;
+
+    e->next = ST[h];
+    ST[h] = e;
+}
+
+struct token getNextToken(FILE *fp) {
+    struct token t;
+    char buf[50];
+    int ch, i;
+
+    while((ch=fgetc(fp))!=EOF) {
+        col_no++;
+
+        if(ch=='\n'){ line_no++; col_no=0; continue; }
+        if(isspace(ch)) continue;
+
+        if(isalpha(ch)||ch=='_') {
+            i=0; buf[i++]=ch;
+            while(isalnum(ch=fgetc(fp))||ch=='_'){ buf[i++]=ch; col_no++; }
+            buf[i]='\0'; ungetc(ch,fp);
+
+            strcpy(t.tk_name,buf);
+            strcpy(t.type,isKeyword(buf)?"kw":"id");
+            t.row=line_no; t.col=col_no;
+            return t;
         }
 
-        col++;
-
-        if (ch == ' ' || ch == '\t') continue;
-
-        if (ch == '#') {
-            while ((ch = fgetc(fp)) != '\n' && ch != EOF);
-            row++; col = 0;
-            continue;
+        if(isdigit(ch)) {
+            while(isdigit(fgetc(fp)));
+            strcpy(t.tk_name,"num");
+            strcpy(t.type,"num");
+            return t;
         }
 
-        if (ch == '/') {
-            char next = fgetc(fp);
-            if (next == '/') {
-                while ((ch = fgetc(fp)) != '\n' && ch != EOF);
-                row++; col = 0;
-                continue;
-            }
-            if (next == '*') {
-                char prev = 0;
-                while ((ch = fgetc(fp)) != EOF) {
-                    if (ch == '\n') { row++; col = 0; }
-                    if (prev == '*' && ch == '/') break;
-                    prev = ch;
-                }
-                continue;
-            }
-            ungetc(next, fp);
-        }
-
-        if (isalpha(ch) || ch == '_') {
-            int startCol = col;
-            i = 0;
-            buf[i++] = ch;
-
-            while (isalnum(ch = fgetc(fp)) || ch == '_') {
-                buf[i++] = ch;
-                col++;
-            }
-            buf[i] = '\0';
-            ungetc(ch, fp);
-
-            if (isKeyword(buf)) {
-                printToken(buf, row, startCol);
-                if (isDataType(buf))
-                    strcpy(lastType, buf);
-            } else {
-                printToken("id", row, startCol);
-                if (strlen(lastType) > 0)
-                    insertST(buf, lastType);
-            }
-            continue;
-        }
-
-        if (isdigit(ch)) {
-            int startCol = col;
-            int hasDot = 0;
-
-            while (1) {
-                ch = fgetc(fp);
-                if (isdigit(ch)) col++;
-                else if (ch == '.' && !hasDot) {
-                    hasDot = 1; col++;
-                }
-                else break;
-            }
-            ungetc(ch, fp);
-            printToken("num", row, startCol);
-            continue;
-        }
-
-        if (ch == '"') {
-            int startCol = col;
-            int closed = 0;
-
-            while ((ch = fgetc(fp)) != EOF) {
-                col++;
-                if (ch == '"') { closed = 1; break; }
-                if (ch == '\n') { row++; col = 0; }
-            }
-
-            if (closed)
-                printToken("string literal", row, startCol);
-            else
-                printf("\nError: Unterminated string literal at %d,%d\n",
-                       row, startCol);
-            continue;
-        }
-
-        if (strchr("+-*/%=<>!&|", ch)) {
-            char op[3] = {ch, '\0'};
-            int startCol = col;
-
-            char next = fgetc(fp);
-            if ((ch == '+' && next == '+') ||
-                (ch == '-' && next == '-') ||
-                (ch == '=' && next == '=') ||
-                (ch == '<' && next == '=') ||
-                (ch == '>' && next == '=') ||
-                (ch == '&' && next == '&') ||
-                (ch == '|' && next == '|')) {
-                op[1] = next;
-                op[2] = '\0';
-                col++;
-            } else {
-                ungetc(next, fp);
-            }
-            printToken(op, row, startCol);
-            continue;
-        }
-
-        if (strchr("(){}[],;", ch)) {
-            char sym[2] = {ch, '\0'};
-            printToken(sym, row, col);
+        if(strchr("(){};,",ch)) {
+            t.tk_name[0]=ch; t.tk_name[1]='\0';
+            strcpy(t.type,"sym");
+            return t;
         }
     }
+
+    strcpy(t.type,"EOF");
+    return t;
 }
 
 void displayST() {
-    printf("\n\n---------------------------------------------\n");
-    printf("SlNo  Lexeme      DataType    Ptr\n");
-    printf("---------------------------------------------\n");
+    printf("\nGLOBAL SYMBOL TABLE\n");
+    printf("Lexeme\tType\tDT\tSize\tHash\n");
+    for(int i=0;i<TABSZ;i++)
+        for(struct sym_ent *e=ST[i];e;e=e->next)
+            if(strcmp(e->scope,"global")==0)
+                printf("%s\t%s\t%s\t%d\t%d\n",
+                       e->lexe,e->sym_type,e->dt_type,e->size,e->h_val);
 
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        Symbol *temp = ST[i];
-        while (temp) {
-            printf("%-5d %-11s %-11s %d\n",
-                   slno++, temp->lexeme, temp->datatype, temp->ptr);
-            temp = temp->next;
-        }
-    }
-    printf("---------------------------------------------\n");
+    printf("\nLOCAL SYMBOL TABLES\n");
+    for(int i=0;i<TABSZ;i++)
+        for(struct sym_ent *e=ST[i];e;e=e->next)
+            if(strcmp(e->scope,"global")!=0)
+                printf("%s (%s)\t%s\t%s\t%d\t%d\n",
+                       e->lexe,e->scope,e->sym_type,e->dt_type,e->size,e->h_val);
 }
 
 int main() {
-    FILE *fp = fopen("q2in.c", "r");
-    if (!fp) {
-        printf("File not found\n");
-        return 0;
+    FILE *fp = fopen("q1in.c","r");
+    if(!fp) return 1;
+
+    for(int i=0;i<TABSZ;i++) ST[i]=NULL;
+
+    struct token tok, next;
+    char currType[10]="";
+    char scope[20]="global";
+
+    while(1) {
+        tok = getNextToken(fp);
+        if(strcmp(tok.type,"EOF")==0) break;
+
+        if(strcmp(tok.type,"kw")==0 && dt_size(tok.tk_name)>0) {
+            strcpy(currType,tok.tk_name);
+        }
+        else if(strcmp(tok.type,"id")==0 && currType[0]) {
+            long pos = ftell(fp);
+            next = getNextToken(fp);
+
+            if(strcmp(next.tk_name,"(")==0) {
+                insertST(tok.tk_name,"func",currType,"global");
+                strcpy(scope,tok.tk_name);
+            } else {
+                insertST(tok.tk_name,"var",currType,scope);
+            }
+            fseek(fp,pos,SEEK_SET);
+            currType[0]='\0';
+        }
+        else if(strcmp(tok.tk_name,"}")==0) {
+            strcpy(scope,"global");
+        }
     }
 
-    lexicalAnalyze(fp);
     fclose(fp);
     displayST();
     return 0;
