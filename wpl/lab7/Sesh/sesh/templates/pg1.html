@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>First Page</title>
+</head>
+<body>
+
+<h2>Enter Passenger Details</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    Name:
+    <input type="text" name="name" required>
+    <br><br>
+
+    Seat:
+    <input type="text" name="seat" required>
+    <br><br>
+
+    Destination:
+    <select name="destination">
+        <option value="Mumbai">Mumbai</option>
+        <option value="Kerala">Kerala</option>
+        <option value="Punjab">Punjab</option>
+        <option value="Goa">Goa</option>
+    </select>
+    <br><br>
+
+    <button type="submit">Submit</button>
+
+</form>
+
+</body>
+</html>
