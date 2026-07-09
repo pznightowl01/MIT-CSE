@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Institutes List</title>
+
+    <style>
+
+        Body { font-family: Arial, sans-serif; margin: 40px; }
+
+        Select { width: 300px; padding: 10px; font-size: 16px; }
+
+        H1 { color: #333; }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Select Institute</h1>
+
+    <select>
+
+        <option value=””>-- Select Institute --</option>
+
+        {% for institute in institutes %}
+
+        <option value=”{{ institute.institute_id }}”>{{ institute.name }}</option>
+
+        {% empty %}
+
+        <option value=””>No institutes available</option>
+
+        {% endfor %}
+
+    </select>
+
+</body>
+
+</html>
