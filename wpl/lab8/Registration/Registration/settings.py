@@ -1,4 +1,3 @@
-
 INSTALLED_APPS = [
     'regis',
     'django.contrib.admin',
