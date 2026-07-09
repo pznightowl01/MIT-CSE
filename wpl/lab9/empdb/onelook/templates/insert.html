@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Insert Works</title>
+    <style>
+        Body {
+            Font-family: Arial, sans-serif;
+            Background-color: #f7f7f7;
+            Display: flex;
+            Justify-content: center;
+            Align-items: center;
+            Height: 100vh;
+            Margin: 0;
+        }
+
+        .container {
+            Background: white;
+            Padding: 25px 35px;
+            Border-radius: 8px;
+            Box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            Width: 350px;
+        }
+
+        H2 {
+            Text-align: center;
+            Margin-bottom: 20px;
+            Font-weight: normal;
+        }
+
+        Form p {
+            Margin-bottom: 12px;
+        }
+
+        Input {
+            Width: 100%;
+            Padding: 8px;
+            Margin-top: 4px;
+            Border: 1px solid #ddd;
+            Border-radius: 4px;
+        }
+
+        Button {
+            Width: 100%;
+            Padding: 10px;
+            Background-color: #333;
+            Color: white;
+            Border: none;
+            Border-radius: 4px;
+            Cursor: pointer;
+        }
+
+        Button:hover {
+            Background-color: #555;
+        }
+
+        .nav {
+            Text-align: center;
+            Margin-bottom: 15px;
+        }
+
+        .nav a {
+            Text-decoration: none;
+            Color: #333;
+            Margin: 0 10px;
+            Font-size: 14px;
+        }
+
+        .success {
+            Color: green;
+            Text-align: center;
+            Margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class=”container”>
+    <div class=”nav”>
+        <a href=”/insert/”>Insert</a> |
+        <a href=”/search/”>Search</a>
+    </div>
+
+    <h2>Insert into WORKS</h2>
+
+    {% if success %}
+    <p class=”success”>Record inserted successfully!</p>
+    {% endif %}
+
+    <form method=”post”>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type=”submit”>Insert</button>
+    </form>
+</div>
+
+</body>
+</html>
