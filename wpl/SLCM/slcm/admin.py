@@ -1,6 +1,4 @@
 from django.contrib import admin
-from .models import Category, Page
-# Register your models here.
+from .models import Student
 
-admin.site.register(Category)
-admin.site.register(Page)
+admin.site.register(Student)
